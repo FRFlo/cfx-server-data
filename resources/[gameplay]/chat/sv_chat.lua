@@ -190,7 +190,19 @@ local function routeMessage(source, author, message, mode, fromConsole)
         TriggerClientEvent('chatMessage', -1, GetPlayerName(source),  { 255, 255, 255 }, message)
     end
 
-    print(GetPlayerName(source) .. '^7: ' .. message .. '^7')
+    if not fromConsole and GetConvarInt('chat_silent', 0) == 0 then
+        print(author .. '^7' .. (modes[mode] and (' (' .. modes[mode].displayName .. ')') or '') .. ': ' .. message .. '^7')
+    end
+end
+
+AddEventHandler('_chat:messageEntered', function(author, color, message, mode)
+    if not message or not author then
+        return
+    end
+
+    local source = source
+
+    routeMessage(source, author, message, mode)
 end)
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
