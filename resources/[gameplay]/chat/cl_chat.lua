@@ -275,11 +275,12 @@ RegisterCommand('toggleChat', function()
   SetResourceKvp('hideState', tostring(chatHideState))
 end, false)
 
+local lastChatHideState = -1
+
 Citizen.CreateThread(function()
   SetTextChatEnabled(false)
   SetNuiFocus(false)
 
-  local lastChatHideState = -1
   local origChatHideState = -1
 
   while true do
@@ -334,3 +335,25 @@ Citizen.CreateThread(function()
     end
   end
 end)
+
+local function setHideState(state,setLastState)
+  if type(state) == 'string' then
+    state = CHAT_HIDE_STATES[state]
+  end
+
+  chatHideState = state
+
+  if setLastState then
+    lastChatHideState = state
+  end
+end
+
+local function getHideState()
+  return chatHideState
+end
+
+exports('setHideState',setHideState)
+exports('getHideState',getHideState)
+
+AddEventHandler('chat:setHideState',setHideState)
+AddEventHandler('chat:getHideState',getHideState)
