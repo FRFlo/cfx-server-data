@@ -143,7 +143,8 @@ RegisterNUICallback('chatResult', function(data, cb)
       TriggerServerEvent('_chat:messageEntered', GetPlayerName(id), { r, g, b }, data.message, data.mode)
     end
   end
-
+  
+  TriggerEvent('chat:closed')
   cb('ok')
 end)
 
@@ -218,34 +219,8 @@ RegisterNUICallback('loaded', function(data, cb)
   cb('ok')
 end)
 
-local CHAT_HIDE_STATES = {
-  SHOW_WHEN_ACTIVE = 0,
-  ALWAYS_SHOW = 1,
-  ALWAYS_HIDE = 2
-}
-
-local kvpEntry = GetResourceKvpString('hideState')
-local chatHideState = kvpEntry and tonumber(kvpEntry) or CHAT_HIDE_STATES.SHOW_WHEN_ACTIVE
-local isFirstHide = true
-
-if not isRDR then
-  if RegisterKeyMapping then
-    RegisterKeyMapping('toggleChat', 'Toggle chat', 'keyboard', 'l')
-  end
-
-  RegisterCommand('toggleChat', function()
-    if chatHideState == CHAT_HIDE_STATES.SHOW_WHEN_ACTIVE then
-      chatHideState = CHAT_HIDE_STATES.ALWAYS_SHOW
-    elseif chatHideState == CHAT_HIDE_STATES.ALWAYS_SHOW then
-      chatHideState = CHAT_HIDE_STATES.ALWAYS_HIDE
-    elseif chatHideState == CHAT_HIDE_STATES.ALWAYS_HIDE then
-      chatHideState = CHAT_HIDE_STATES.SHOW_WHEN_ACTIVE
-    end
-
-    isFirstHide = false
-
-    SetResourceKvp('hideState', tostring(chatHideState))
-  end, false)
+function IsTyping()
+  return chatInputActive
 end
 
 Citizen.CreateThread(function()
@@ -266,6 +241,7 @@ Citizen.CreateThread(function()
         SendNUIMessage({
           type = 'ON_OPEN'
         })
+        TriggerEvent('chat:opened')
       end
     end
 
