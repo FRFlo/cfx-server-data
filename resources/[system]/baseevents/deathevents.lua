@@ -77,8 +77,8 @@ function GetPlayers()
     return players
 end
 function GetPlayerByEntityID(id)
-	for _, i in ipairs(GetPlayers()) do
-		if(NetworkIsPlayerActive(i) and GetPlayerPed(i) == id) then return i end
+	for _,serverId in ipairs(GetActivePlayers()) do
+		if GetPlayerPed(serverId) == id then return serverId end
 	end
 	return nil
 end
