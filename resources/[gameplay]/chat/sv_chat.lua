@@ -184,31 +184,13 @@ local function routeMessage(source, author, message, mode, fromConsole)
         return
     end
 
-    TriggerEvent('chatMessage', source, #outMessage.args > 1 and outMessage.args[1] or '', outMessage.args[#outMessage.args])
+    TriggerEvent('chatMessage', source, GetPlayerName(source), message)
 
     if not WasEventCanceled() then
-        if type(routingTarget) ~= 'table' then
-            TriggerClientEvent('chat:addMessage', routingTarget, outMessage)
-        else
-            for _, id in ipairs(routingTarget) do
-                TriggerClientEvent('chat:addMessage', id, outMessage)
-            end
-        end
+        TriggerClientEvent('chatMessage', -1, GetPlayerName(source),  { 255, 255, 255 }, message)
     end
 
-    if not fromConsole then
-        print(author .. '^7' .. (modes[mode] and (' (' .. modes[mode].displayName .. ')') or '') .. ': ' .. message .. '^7')
-    end
-end
-
-AddEventHandler('_chat:messageEntered', function(author, color, message, mode)
-    if not message or not author then
-        return
-    end
-
-    local source = source
-
-    routeMessage(source, author, message, mode)
+    print(GetPlayerName(source) .. '^7: ' .. message .. '^7')
 end)
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
